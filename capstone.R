@@ -5,6 +5,9 @@ library("dplyr")
 library("magrittr")
 library("ggplot2")
 library("ggvis")
+library("mclust")
+library('beeswarm')
+library("GGally")
 
 ###### Reading Data######
 news <-  read_csv('all_news.csv')
@@ -23,10 +26,18 @@ sentiment <- all_news_sentiment %>%
 ggplot(sentiment, aes(id, description, fill = id)) + 
   geom_bar(stat="identity", position = "dodge")
 #####plot####
-ggplot(sentiment, aes(id, title, fill = id)) + 
-  geom_bar(stat="identity", position = "dodge")
-
-
+sentiment <- all_news_sentiment %>% 
+  select(id, titleComp, descriptionComp) 
+  
+ggplot(all_news_sentiment, aes(titleComp, descriptionComp, color = id)) + geom_point()
+####### beeswarm#######
+beeswarm(descriptionComp ~ titleComp, data = all_news_sentiment, 
+         log = TRUE, pch = 16, col = rainbow(8), corral = "omit",
+         main = 'beeswarm')
+#######
+ggplot(sentiment, aes(title, description, color = id)) + geom_point()
+#######gcorr######
+ggcorr(sentiment)
 ##### what the hell ####
 
 
