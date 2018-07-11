@@ -8,6 +8,7 @@ library("ggvis")
 library("mclust")
 library('beeswarm')
 library("GGally")
+library("LDAvis")
 
 ###### Reading Data######
 news <-  read_csv('all_news.csv')
