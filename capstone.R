@@ -8,11 +8,17 @@ library("ggvis")
 library("mclust")
 library('beeswarm')
 library("GGally")
-library("LDAvis")
-
+#library("LDAvis")
+library(readr)
+install.packages("DT")
 ###### Reading Data######
-news <-  read_csv('all_news.csv')
-all_news_sentiment <- read_csv('all_news_sentiment.csv')
+
+all_news_sentiment <- read_csv("~/code/nss-ds/capstoneDS/news-bubbles/data/all_news_sentiment.csv")
+View(all_news_sentiment)
+
+news <-  read_csv('data/all_news.csv')
+all_news_sentiment <- read_csv('data/all_news_sentiment.csv')
+View(all_news_sentiment)
 sentiment <- all_news_sentiment %>% 
   select(id, titleComp, descriptionComp) %>%
    group_by(id) %>% 
@@ -54,3 +60,4 @@ news_sentiment %>%
   add_legend("fill", title = "Sentiment Score", values = name , properties = legend_props(labels = list(fontSize = 15),title = list(fontSize = 15))) %>%
   scale_nominal("fill")
  
+
