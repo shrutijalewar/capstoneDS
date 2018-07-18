@@ -22,8 +22,6 @@ library("ggvis")
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   
- 
-  
   output$distPlot <- renderPlot({
     
     # generate bins based on input$bins from ui.R
@@ -36,10 +34,9 @@ shinyServer(function(input, output) {
   })
   
   output$mytable = DT::renderDataTable (DT::datatable ({
-    sentiment_link <- sentiment %>% select(name,title, description, author,url,	urlToImage) %>% 
-      mutate(url = paste0("<a href='", url,"' target='_blank'>", 'Link',"</a>"),
-                                           urlToImage = paste0("<img src=",urlToImage," height='52'></img>")) 
-}, escape = FALSE))
+    sentiment_link <- sentiment %>% mutate(urlToImage = paste0("<a href=",url,">","<img src=",urlToImage," height='104'></img></a>")) %>% 
+      select(name,title, description, author,urlToImage)
+  }, escape = FALSE))
   })
   
   

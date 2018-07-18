@@ -21,11 +21,17 @@ shinyUI(
     # Application title
     "News Bubble",
     tabPanel("LDA Topic Clustering",
-             fluidPage(
-               mainPanel(
-                 #plotOutput("distPlot"),
-                 includeHTML("data/vis10_nameTitle.html")
-                )
+             fluidRow(
+               column(2,
+                      selectInput("vis", "Clustering Criteria", c("Publication Name + Title" = "data/vis10_nameTitle.html", "Title Only" = "data/vis10.html"),selected = 'Title Only')
+                      ),
+               column(8,
+                 mainPanel(
+                   #plotOutput("distPlot"),
+                   includeHTML("data/vis10_nameTitle.html")
+                  )
+               ),
+               column(2)
               )
             ),
     tabPanel("Sentiment Analysis",
