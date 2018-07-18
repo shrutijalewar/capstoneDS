@@ -11,9 +11,9 @@ library(shiny)
 library(DT)
 library("tidyverse")
 library("dplyr")
+library("highcharter")
 library("magrittr")
-library("ggplot2")
-library("ggvis")
+
 
 # Define UI for application that draws a histogram
 shinyUI(
@@ -23,7 +23,7 @@ shinyUI(
     tabPanel("LDA Topic Clustering",
              fluidRow(
                column(2,
-                      selectInput("vis", "Clustering Criteria", c("Publication Name + Title" = "data/vis10_nameTitle.html", "Title Only" = "data/vis10.html"),selected = 'Title Only')
+                      selectInput("vis", "Clustering Criteria", c("Name + Title" = "data/vis10_nameTitle.html", "Title Only" = "data/vis10.html"),selected = 'Title Only')
                       ),
                column(8,
                  mainPanel(
@@ -36,43 +36,39 @@ shinyUI(
             ),
     tabPanel("Sentiment Analysis",
              fluidRow(
-               column(3,
+               column(4,
                       wellPanel(  
                         h4("Filter"),
-                        # Sidebar with a slider input for number of bins 
-                        # sidebarLayout(
-                        # sidebarPanel(
-                        sliderInput("year", "Year Released", 1890, 2018, value = c(1950, 2014), sep = ''),
-                        sliderInput("averageRating", "IMDB Rating", 1, 10, value = c(4, 9)),
-                        sliderInput("revenue", "Revenue in USD",0, 2000000000, value = c(0,1500000000)),
-                        sliderInput("budget", "Budget in USD",0, 300000000, value = c(0,200000000)),
-                        selectInput("gender", "Gender of Director", c("All", "male", "female"),selected = 'All'),
-                        selectInput("genres", "Genre (a movie can have multiple genres)",
-                                    c("All", "Action", "Adventure", "Animation", "Biography", "Comedy",
-                                      "Crime", "Documentary", "Drama", "Family", "Fantasy", "History",
-                                      "Horror", "Music", "Musical", "Mystery", "Romance", "Sci-Fi",
-                                      "Short", "Sport", "Thriller", "War", "Western"),selected = 'All')
-                      ),
-                      wellPanel(
-                        h4("Select Your Axis")
-                       # selectInput("xvar", "X-axis variable", axis_vars, selected = "year"),
-                       # selectInput("yvar", "Y-axis variable", axis_vars, selected = "averageRating")
+                        
+                        textInput('title', "Enter Title Text Here","")
+                        ,
+                        textInput('description', "Enter Description Text Here","")
+                        ,
+                        actionButton("submit","Submit")
                       )
                ),
                
-               column(9,
+               column(4,
                       
                       # Show a plot of the generated distribution
                       # mainPanel(
                       wellPanel(
                         fluidRow(
-                          
+                          highchartOutput("hTitle", height = "500px")
                           )
                         )
-                       # ggvisOutput("plot")
-                      
-                      
-               )#col9
+                      ),
+                column(4,
+                       
+                       # Show a plot of the generated distribution
+                       # mainPanel(
+                       wellPanel(
+                         fluidRow(
+                           highchartOutput("hDescription", height = "500px")
+                         )
+                       )
+                    )
+                    
              )#fluidRow
     ),#tabPanel
     tabPanel("Data Table",

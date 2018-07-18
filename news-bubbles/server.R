@@ -16,21 +16,69 @@ library(DT)
 library("tidyverse")
 library("dplyr")
 library("magrittr")
-library("ggplot2")
-library("ggvis")
+library("highcharter")
+
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   
-  output$distPlot <- renderPlot({
+  sentiment_bar <- reactive({
+    sentiment %>%
+      #filter(between(year, input$year[1], input$year[2])) %>%
+      #filter(date_of_month %in% c(6, 13, 20)) %>%
+      #mutate(day = ifelse(date_of_month == 13, "thirteen", "not_thirteen")) %>%
+      group_by(id) %>%
+      filter(str_detect(str_to_lower(title), str_to_lower(input$title))) %>%
+      filter(str_detect(str_to_lower(description), str_to_lower(input$description))) %>%
+      summarise(titlePos = mean(titlePos), titleNeg = mean(titleNeg), titleNeut = mean(titleNeut),titleComp = mean(titleComp),
+                                descriptionPos = mean(descriptionPos), descriptionNeg = mean(descriptionNeg),
+                               descriptionNeut = mean(descriptionNeut), descriptionComp = mean(descriptionComp)) %>%
+      arrange(id)
+      #xvar = paste0('title', Comp)
+  })
+  
+  output$hTitle <- renderHighchart({
     
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    hc <- highchart() %>%
+      hc_add_series(data = sentiment_bar()$titleComp, 
+                    type = "bar",
+                    name = "Mean Sentiment Score",
+                    showInLegend = FALSE) %>% 
+      
+      hc_title(text = "The Aggregate Sentiment Score on Title",
+               style = list(fontWeight = "bold")) %>% 
+      hc_subtitle(text = "Difference in the sentiment across differnt publications") %>% 
+      hc_tooltip(valueDecimals = 2,
+                 pointFormat = "Score: {point.y}") %>% 
+      hc_xAxis(categories = sentiment_bar()$id,
+               tickmarkPlacement = "on",
+               opposite = FALSE) %>%
+      hc_credits(enabled = TRUE, 
+                 text = "Sources: News Api",
+                 style = list(fontSize = "10px"))
+    hc #%>% hc_add_theme(hc_theme_538())
+  })
+  
+  output$hDescription <- renderHighchart({
     
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    
+    hc <- highchart() %>%
+      hc_add_series(data = sentiment_bar()$descriptionComp, 
+                    type = "bar",
+                    name = "Mean Sentiment Score",
+                    showInLegend = FALSE) %>% 
+      
+      hc_title(text = "The Aggregate Sentiment Score on Description",
+               style = list(fontWeight = "bold")) %>% 
+      hc_subtitle(text = "Difference in the sentiment across differnt publications") %>% 
+      hc_tooltip(valueDecimals = 2,
+                 pointFormat = "Score: {point.y}") %>% 
+      hc_xAxis(categories = sentiment_bar()$id,
+               tickmarkPlacement = "on",
+               opposite = TRUE) %>%
+      hc_credits(enabled = TRUE, 
+                 text = "Sources: News Api",
+                 style = list(fontSize = "10px")) 
+    hc
   })
   
   output$mytable = DT::renderDataTable (DT::datatable ({
