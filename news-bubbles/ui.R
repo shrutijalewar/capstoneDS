@@ -1,11 +1,3 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
 
 library(shiny)
 library(DT)
@@ -20,20 +12,36 @@ shinyUI(
   navbarPage(
     # Application title
     "News Bubble",
-    tabPanel("LDA Topic Clustering",
+    
+    tabPanel("Introduction",
              fluidRow(
-               column(2,
-                      selectInput("vis", "Clustering Criteria", c("Name + Title" = "data/vis10_nameTitle.html", "Title Only" = "data/vis10.html"),selected = 'Title Only')
-                      ),
+               tags$h1("News Bubble"),
+               column(2),
+               
                column(8,
-                 mainPanel(
-                   #plotOutput("distPlot"),
-                   includeHTML("data/vis10_nameTitle.html")
-                  )
+                      wellPanel(
+                        tags$img(src="data/wordle", width = "100px", height = "100px") 
+                      )
                ),
                column(2)
-              )
-            ),
+             ),#fluidRow
+             fluidRow(
+               column(12,
+                      wellPanel(
+                        span("One of the most enduring tools to measure Hollywood’s gender bias is a test originally promoted by cartoonist Alison Bechdel
+                             in a 1985"), a("comic strip",href="http://alisonbechdel.blogspot.com/2005/08/rule.html",target="_blank"), span("from her"), a(" “Dykes To Watch Out For”", href="http://dykestowatchoutfor.com/", target="_blank"), 
+                        span("series. Bechdel said that if a movie can satisfy three criteria — "),
+                        tags$ol(tags$li("There are at least two named women in the picture. "),
+                                tags$li("They have a conversation with each other at some point. "),
+                                tags$li("That conversation isn’t about a male character. ")
+                        ),
+                        span("Then it passes “The Rule,” whereby female characters are allocated a bare minimum of depth."),
+                        span("Using Bechdel scores data from "),a("bechdeltest.com,", href = "https://bechdeltest.com/", target="_blank"), a("Kaggle,",href="https://www.kaggle.com/rounakbanik/the-movies-dataset/data",target="_blank"),
+                        a("imdb datasets,", href="http://www.imdb.com/interfaces/", target="_blank"), span(" and a "),a("gender-prediction package", href="https://cran.r-project.org/web/packages/gender/vignettes/predicting-gender.html", target="_blank"),
+                        span(" and, I analyzed over 5000 films released from 1895 to 2017 to examine the relationship between the prominence of women in a film and the gender of film’s director, genre, 
+                             ratings, budget and revenue.")
+                        ))),
+             ),#tabpanel
     tabPanel("Sentiment Analysis",
              fluidRow(
                column(4,
@@ -69,8 +77,33 @@ shinyUI(
                        )
                     )
                     
-             )#fluidRow
+             ),#fluidRow
+             
+               fluidRow(
+                  column(4),
+                  
+                      column(8,
+                             wellPanel(
+                               highchartOutput("hTreemap", height = "500px")
+                      )
+                  )
+             )
+             
     ),#tabPanel
+    tabPanel("LDA Topic Clustering",
+             fluidRow(
+               column(2,
+                      selectInput("vis", "Clustering Criteria", c("Name + Title" = "data/vis10_nameTitle.html", "Title Only" = "data/vis10.html"),selected = 'Title Only')
+               ),
+               column(8,
+                      mainPanel(
+                        #plotOutput("distPlot"),
+                        includeHTML("data/vis10_nameTitle.html")
+                      )
+               ),
+               column(2)
+             )
+    ),
     tabPanel("Data Table",
              fluidPage(
                fluidRow(

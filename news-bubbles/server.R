@@ -24,17 +24,23 @@ shinyServer(function(input, output) {
   
   sentiment_bar <- reactive({
     sentiment %>%
-      #filter(between(year, input$year[1], input$year[2])) %>%
-      #filter(date_of_month %in% c(6, 13, 20)) %>%
-      #mutate(day = ifelse(date_of_month == 13, "thirteen", "not_thirteen")) %>%
-      group_by(id) %>%
       filter(str_detect(str_to_lower(title), str_to_lower(input$title))) %>%
       filter(str_detect(str_to_lower(description), str_to_lower(input$description))) %>%
+      group_by(name) %>%
       summarise(titlePos = mean(titlePos), titleNeg = mean(titleNeg), titleNeut = mean(titleNeut),titleComp = mean(titleComp),
-                                descriptionPos = mean(descriptionPos), descriptionNeg = mean(descriptionNeg),
-                               descriptionNeut = mean(descriptionNeut), descriptionComp = mean(descriptionComp)) %>%
-      arrange(id)
-      #xvar = paste0('title', Comp)
+                descriptionPos = mean(descriptionPos), descriptionNeg = mean(descriptionNeg),
+                descriptionNeut = mean(descriptionNeut), descriptionComp = mean(descriptionComp)) %>%
+      
+      arrange(name)
+     
+  })
+  
+  sentiment_count <- reactive({
+    sentiment %>%
+      filter(str_detect(str_to_lower(title), str_to_lower(input$title))) %>%
+      filter(str_detect(str_to_lower(description), str_to_lower(input$description))) %>%
+      count(name) %>% 
+      arrange(name)
   })
   
   output$hTitle <- renderHighchart({
@@ -45,17 +51,17 @@ shinyServer(function(input, output) {
                     name = "Mean Sentiment Score",
                     showInLegend = FALSE) %>% 
       
-      hc_title(text = "The Aggregate Sentiment Score on Title",
+      hc_title(text = "The Average Sentiment Score of Title",
                style = list(fontWeight = "bold")) %>% 
-      hc_subtitle(text = "Difference in the sentiment across differnt publications") %>% 
+      hc_subtitle(text = "Difference in the sentiment across publications") %>% 
       hc_tooltip(valueDecimals = 2,
                  pointFormat = "Score: {point.y}") %>% 
-      hc_xAxis(categories = sentiment_bar()$id,
+      hc_xAxis(categories = sentiment_bar()$name,
                tickmarkPlacement = "on",
                opposite = FALSE) %>%
       hc_credits(enabled = TRUE, 
                  text = "Sources: News Api",
-                 style = list(fontSize = "10px"))
+                 style = list(fontSize = "12px"))
     hc #%>% hc_add_theme(hc_theme_538())
   })
   
@@ -67,22 +73,49 @@ shinyServer(function(input, output) {
                     name = "Mean Sentiment Score",
                     showInLegend = FALSE) %>% 
       
-      hc_title(text = "The Aggregate Sentiment Score on Description",
+      hc_title(text = "The Average Sentiment Score of Description",
                style = list(fontWeight = "bold")) %>% 
-      hc_subtitle(text = "Difference in the sentiment across differnt publications") %>% 
+      hc_subtitle(text = "Difference in the sentiment across publications") %>% 
       hc_tooltip(valueDecimals = 2,
                  pointFormat = "Score: {point.y}") %>% 
-      hc_xAxis(categories = sentiment_bar()$id,
+      hc_xAxis(categories = sentiment_bar()$name,
                tickmarkPlacement = "on",
                opposite = TRUE) %>%
       hc_credits(enabled = TRUE, 
                  text = "Sources: News Api",
-                 style = list(fontSize = "10px")) 
+                 style = list(fontSize = "12px")) 
+    hc
+  })
+  
+  output$hTreemap <- renderHighchart({
+    
+    hc <- highchart() %>%
+      hc_add_series(
+        data = sentiment_count()$n,
+        name = "Number of Articles",
+        type = "column",
+        showInLegend = FALSE
+          ) %>% 
+      
+      hc_title(text = "The Number of Articles",
+               style = list(fontWeight = "bold")) %>% 
+      hc_subtitle(text = "Number of Articles across Publications") %>% 
+      hc_tooltip(valueDecimals = 0,
+                 pointFormat = "#: {point.y}") %>% 
+      hc_xAxis(categories = sentiment_bar()$name,
+               tickmarkPlacement = "on",
+               opposite = FALSE) %>%
+      hc_credits(enabled = TRUE, 
+                 text = "Sources: News Api",
+                 style = list(fontSize = "12px")) 
     hc
   })
   
   output$mytable = DT::renderDataTable (DT::datatable ({
-    sentiment_link <- sentiment %>% mutate(urlToImage = paste0("<a href=",url,">","<img src=",urlToImage," height='104'></img></a>")) %>% 
+    sentiment_link <- sentiment %>% 
+      filter(str_detect(str_to_lower(title), str_to_lower(input$title))) %>%
+      filter(str_detect(str_to_lower(description), str_to_lower(input$description))) %>%
+      mutate(urlToImage = paste0("<a href=",url," target='_blank'>","<img src=",urlToImage," height='104'></img></a>")) %>% 
       select(name,title, description, author,urlToImage)
   }, escape = FALSE))
   })
