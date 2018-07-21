@@ -1,0 +1,12 @@
+name: news-bubbles
+title: news-bubbles
+username:
+account: shrutijalewar
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 385349
+bundleId: 1492918
+url: https://shrutijalewar.shinyapps.io/news-bubbles/
+when: 1532198588.55393
+asMultiple: FALSE
+asStatic: FALSE

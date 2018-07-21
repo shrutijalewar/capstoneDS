@@ -1,10 +1,12 @@
 
-library(shiny)
-library(DT)
+library("shiny")
+library("DT")
 library("tidyverse")
 library("dplyr")
 library("highcharter")
 library("magrittr")
+library("irlba")
+
 
 
 # Define UI for application that draws a histogram
@@ -12,67 +14,88 @@ shinyUI(
   navbarPage(
     # Application title
     "News Bubble",
-    
     tabPanel("Introduction",
              fluidRow(
-               tags$h1("News Bubble"),
-               column(2),
-               
-               column(8,
-                      wellPanel(
-                        tags$img(src="data/wordle", width = "100px", height = "100px") 
-                      )
-               ),
-               column(2)
-             ),#fluidRow
-             fluidRow(
-               column(12,
-                      wellPanel(
-                        span("One of the most enduring tools to measure Hollywood’s gender bias is a test originally promoted by cartoonist Alison Bechdel
-                             in a 1985"), a("comic strip",href="http://alisonbechdel.blogspot.com/2005/08/rule.html",target="_blank"), span("from her"), a(" “Dykes To Watch Out For”", href="http://dykestowatchoutfor.com/", target="_blank"), 
-                        span("series. Bechdel said that if a movie can satisfy three criteria — "),
-                        tags$ol(tags$li("There are at least two named women in the picture. "),
-                                tags$li("They have a conversation with each other at some point. "),
-                                tags$li("That conversation isn’t about a male character. ")
+               column(4, img(width = 500, height = 600, src="wordle.png")),
+               column(7,
+                      #wellPanel(
+                        shiny::h1("News Bubble"),
+                      shiny::h4("Data Question:", a("Github", href="https://github.com/shrutijalewar/capstoneDS", target="_blank")),
+                        p("I wanted to explore how news articles clustered and how they scored on the sentiment score."),
+                          tags$ul(
+                            tags$li("Is there a pattern in the sentiment score based on its source/publication?"),
+                            tags$li("How does the sentiment score change with different topics?"),
+                            tags$li("Is there an obvious and discernible pattern?"),
+                            tags$li("Do the new articles they cluster based on publication?"),
+                            tags$li("Do they cluster based on content?")
+                              ),
+                      shiny::h4("Data Source:", a("NewsApi",href="https://newsapi.org/docs/endpoints/everything",target="_blank")),  
+                             p("News articles for this study were collected from an NewsApi.It is a simple HTTP REST API for searching and retrieving live articles from all over the web.
+                               You can search for articles with any combination of the following criteria: keyword or phrase, date published, source name, source domain name and language."),
+                        p("You can sort the results that are nested JSON response, in the following orders:Date published, Relevancy to search keyword or Popularity of source.
+                          For the purpose of this study I specifically searched for articles from the following sources: al-jazeera-english', 'bloomberg', 'breitbart-news', 'fox-news',
+                          'msnbc', 'politico', 'reuters', 'the-american-conservative', 'the-hill','the-huffington-post', 'the-new-york-times', 'the-wall-street-journal',
+                          'the-washington-post and sorted them based on their published date."),
+                      shiny::h4("Sentiment Analysis:", a("VADER", href="https://github.com/cjhutto/vaderSentiment", target="_blank")),
+                      p("For sentiment analysis I used an nltk package VADER, or the Valence Aware Dictionary and sEntiment Reasoner is a lexicon and rule-based sentiment analysis library 
+                         The VADER sentiment lexicon is sensitive both the polarity and the intensity of sentiments expressed in social media contexts, and is also generally applicable 
+                        to sentiment analysis in other domains."),
+                      p("The compound score, which is used in this project is a 'normalized, weighted composite score'. It is computed by adding the valence scores of each word in the lexicon, 
+                        that are adjusted according to the rules, and then are normalized to be between -1 (most extreme negative) and +1 (most extreme positive). 
+                        This according to the authors is the most useful metric if you want a single unidimensional measure of sentiment for a given sentence. "
                         ),
-                        span("Then it passes “The Rule,” whereby female characters are allocated a bare minimum of depth."),
-                        span("Using Bechdel scores data from "),a("bechdeltest.com,", href = "https://bechdeltest.com/", target="_blank"), a("Kaggle,",href="https://www.kaggle.com/rounakbanik/the-movies-dataset/data",target="_blank"),
-                        a("imdb datasets,", href="http://www.imdb.com/interfaces/", target="_blank"), span(" and a "),a("gender-prediction package", href="https://cran.r-project.org/web/packages/gender/vignettes/predicting-gender.html", target="_blank"),
-                        span(" and, I analyzed over 5000 films released from 1895 to 2017 to examine the relationship between the prominence of women in a film and the gender of film’s director, genre, 
-                             ratings, budget and revenue.")
-                        ))),
+               shiny::h4("Topic Clustering:", a("LDA", href="https://radimrehurek.com/gensim/models/ldamodel.html", target="_blank")),
+               p("Latent Dirichlet allocation-LDA (not to be confused with Linear Discriminant Analysis) is a generative statistical 
+                 model that allows sets of observations to be explained by unobserved groups that explain why some parts of the data are similar. 
+                 This module allows both LDA model estimation from a training corpus and inference of topic distribution on new, unseen documents. 
+                 The model can also be updated with new documents for online training."),
+               p("In more detail, LDA represents documents as mixtures of topics that spit out words with certain probabilities. 
+                  It assumes that documents are produced in the following fashion: when writing each document, you:"),
+               tags$ul( 
+                 tags$li("Decide on the number of words N the document will have (say, according to a Poisson distribution)."),
+                 tags$li("Choose a topic mixture for the document (according to a Dirichlet distribution over a fixed set of K topics)")
+                 ),#ul
+               p("")
+               ), #col 7
+               column(1)
+                 )#fluidRow
              ),#tabpanel
     tabPanel("Sentiment Analysis",
              fluidRow(
                column(4,
                       wellPanel(  
-                        h4("Filter"),
-                        
-                        textInput('title', "Enter Title Text Here","")
-                        ,
-                        textInput('description', "Enter Description Text Here","")
-                        ,
-                        actionButton("submit","Submit")
+                        shiny::h4("Filter"),
+                        textInput('title', "Enter Title Text Here",""),
+                        textInput('description', "Enter Description Text Here",""),
+                        actionButton("submit","Submit"),
+                        shiny::h4("Looking for Suggestions? Try these:"),
+                        tags$ul(
+                          tags$li("North Korea"),
+                          tags$li("China"),
+                          tags$li("Migrants"),
+                          tags$li("Trump"),
+                          tags$li("White House"),
+                          tags$li("World Cup"),
+                          tags$li("Washington"),
+                          tags$li("Supreme Court"),
+                          tags$li("Texas"),
+                          tags$li("Shooting")
+                          
+                        )
                       )
                ),
                
                column(4,
-                      
-                      # Show a plot of the generated distribution
-                      # mainPanel(
                       wellPanel(
                         fluidRow(
-                          highchartOutput("hTitle", height = "500px")
+                          highchartOutput("hTitle", height = "400px")
                           )
                         )
                       ),
                 column(4,
-                       
-                       # Show a plot of the generated distribution
-                       # mainPanel(
                        wellPanel(
                          fluidRow(
-                           highchartOutput("hDescription", height = "500px")
+                           highchartOutput("hDescription", height = "400px")
                          )
                        )
                     )
@@ -81,36 +104,34 @@ shinyUI(
              
                fluidRow(
                   column(4),
-                  
                       column(8,
                              wellPanel(
-                               highchartOutput("hTreemap", height = "500px")
+                               highchartOutput("hTreemap", height = "300px")
                       )
                   )
              )
              
     ),#tabPanel
-    tabPanel("LDA Topic Clustering",
-             fluidRow(
-               column(2,
-                      selectInput("vis", "Clustering Criteria", c("Name + Title" = "data/vis10_nameTitle.html", "Title Only" = "data/vis10.html"),selected = 'Title Only')
-               ),
-               column(8,
-                      mainPanel(
-                        #plotOutput("distPlot"),
-                        includeHTML("data/vis10_nameTitle.html")
-                      )
-               ),
-               column(2)
-             )
-    ),
-    tabPanel("Data Table",
+    tabPanel("Articles",
              fluidPage(
                fluidRow(
                  column(12,
                         DT::dataTableOutput("mytable")
                  )
                )
+             )
+    ),
+    tabPanel("Topic Clustering",
+             fluidRow(
+               column(2,
+                      a("Topic Clustering on title only", href="vis10.html", target="_blank")),
+               column(8,
+                      mainPanel(
+                        includeHTML("www/vis10_nameTitle.html")#,
+                        #includeHTML("data/vis10.html")
+                      )
+               ),
+               column(2)
              )
     )
   )#navbar

@@ -1,22 +1,15 @@
-#
-# This is the server logic of a Shiny web application. You can run the 
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
-setwd('/Users/ssharma/code/nss-ds/capstoneDS/news-bubbles/')
+
 all_news_sentiment <- read_csv('data/all_news_sentiment.csv')
 sentiment <- all_news_sentiment %>% 
   select(name,`Unnamed: 0`, title, description, author,	publishedAt, url,	urlToImage,	id, titlePos,	titleNeg,	titleNeut,	titleComp,	descriptionPos,	descriptionNeg,	descriptionNeut,
          descriptionComp) 
-library(shiny)
-library(DT)
+library("shiny")
+library("DT")
 library("tidyverse")
 library("dplyr")
 library("magrittr")
 library("highcharter")
+library("irlba")
 
 
 # Define server logic required to draw a histogram
