@@ -20,6 +20,16 @@ shinyUI(
                column(7,
                       #wellPanel(
                         shiny::h1("News Bubble"),
+                      span("American life and media consumption has become extremely"), a("politically polar", 
+                      href="https://www.washingtonpost.com/news/politics/wp/2017/11/13/how-polarization-and-splintered-media-are-fostering-a-world-of-doubt/?utm_term=.e4d2f0e8b55e", target="_blank"),
+                      span("especially in recent times. According to a"), a("study by Pew Research Center", 
+                      href="http://www.journalism.org/2014/10/21/political-polarization-media-habits/",target = '_blank'),
+                      span("It’s not just about the public’s views on issues, but the way they use media (including social media) 
+                          and talk about politics with other people. While the most consistent liberals and conservatives both 
+                        tend to drive broader political discussion, they do so with news and analyses drawn from very different 
+                        segments of the media landscape, inhabiting a bubble. A filter bubble is a state of intellectual 
+                        isolation that can result from personalized searches and media habits. This is my attempt at analyzing 
+                        and clustering news content from differnet news domains."),
                       shiny::h4("Data Question:", a("Github", href="https://github.com/shrutijalewar/capstoneDS", target="_blank")),
                         p("I wanted to explore how news articles clustered and how they scored on the sentiment score."),
                           tags$ul(
