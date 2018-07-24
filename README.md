@@ -6,6 +6,7 @@ American life and media consumption has become extremely politically polar espec
 ![Image1](https://github.com/shrutijalewar/capstoneDS/blob/master/screenshots/1.png?raw=true)
 ![Image2](https://github.com/shrutijalewar/capstoneDS/blob/master/screenshots/2.png?raw=true)
 ![Image3](https://github.com/shrutijalewar/capstoneDS/blob/master/screenshots/3.png?raw=true)
+![Image5](https://github.com/shrutijalewar/capstoneDS/blob/master/screenshots/5.png?raw=true)
 
 
 
